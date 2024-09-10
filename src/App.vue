@@ -1,30 +1,63 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  <div id="app">
+    <h1>Poll Application</h1>
+
+    <!-- Show the Create User page if no user has been created -->
+    <div v-if="!userCreated">
+      <CreateUserComponent @user-created="handleUserCreated" />
+    </div>
+
+    <!-- Show the main app if the user is created -->
+    <div v-else>
+      <div class="greeting">
+        <strong>Hello, {{ createdUser.username }}!</strong>
+      </div>
+      <nav>
+        <button @click="currentView = 'CreatePollComponent'">Create Poll</button>
+        <button @click="currentView = 'VoteComponent'">Vote</button>
+      </nav>
+      <component :is="currentView" :user="createdUser" />
+    </div>
   </div>
-  <HelloWorld msg="Vite + Vue" />
 </template>
 
+<script>
+import CreatePollComponent from './components/CreatePollComponent.vue';
+import VoteComponent from './components/VoteComponent.vue';
+import CreateUserComponent from './components/CreateUserComponent.vue';
+
+export default {
+  name: 'App',
+  data() {
+    return {
+      userCreated: false,  // Track if the user has been created
+      createdUser: null,   // Store the created user details
+      currentView: 'CreatePollComponent'  // Default view is Create Poll
+    };
+  },
+  components: {
+    CreatePollComponent,
+    VoteComponent,
+    CreateUserComponent
+  },
+  methods: {
+    handleUserCreated(user) {
+      this.userCreated = true;
+      this.createdUser = user;  // Store the user object and switch to the two-page layout
+    }
+  }
+};
+</script>
+
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+nav {
+  margin-bottom: 20px;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+button {
+  margin-right: 10px;
 }
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+.greeting {
+  margin-bottom: 20px;
+  font-size: 1.2em;
 }
 </style>
