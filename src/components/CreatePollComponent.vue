@@ -45,11 +45,11 @@ export default {
       this.poll.options.splice(index, 1);
     },
     async createPoll() {
-      // Convert date fields to ISO format before sending to the backend
+
       const pollData = {
         question: this.poll.question,
-        publishedAt: new Date(this.poll.publishedAt).toISOString(),  // Convert to ISO
-        validUntil: new Date(this.poll.validUntil).toISOString(),    // Convert to ISO
+        publishedAt: new Date(this.poll.publishedAt).toISOString(),
+        validUntil: new Date(this.poll.validUntil).toISOString(),
         voteOptions: this.poll.options,
         creatorUsername: this.poll.creatorUsername
       };
@@ -79,17 +79,17 @@ export default {
 <style scoped>
 .form-group {
   display: inline-block;
-  margin-right: 15px;  /* Space between the input field and the next label */
+  margin-right: 15px;
 }
 
-/* Add margin to labels that follow input fields */
+
 .form-group label {
-  margin-right: 10px;  /* Space between label and its input */
+  margin-right: 10px;
 }
 
-/* Add margin-left to specific labels */
+
 label[for="publishedAt"],
 label[for="validUntil"] {
-  margin-left: 20px;  /* Adjust this value to control space before these labels */
+  margin-left: 20px;
 }
 </style>

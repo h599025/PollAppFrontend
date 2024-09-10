@@ -23,17 +23,17 @@ export default {
   data() {
     return {
       polls: [],
-      username: ''  // Store the username dynamically
+      username: ''
     };
   },
   async created() {
-    // Retrieve the username from sessionStorage or set it to 'guest' if not found
-    this.username = sessionStorage.getItem('username') || 'guest';  // Fallback to 'guest' if not found
+
+    this.username = sessionStorage.getItem('username') || 'guest';
     console.log("Username retrieved from sessionStorage:", this.username);
 
     const response = await fetch('http://localhost:8080/polls');
     const data = await response.json();
-    console.log("Polls fetched:", data);  // Check if voteOptions are included
+    console.log("Polls fetched:", data);
     this.polls = data;
   },
   methods: {
@@ -43,10 +43,10 @@ export default {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          username: this.username,  // Use the dynamically fetched username
+          username: this.username,
           pollId: pollId,
           voteOptionId: voteOptionId,
-          publishedAt: new Date().toISOString()  // Send the current time as the publishedAt value
+          publishedAt: new Date().toISOString()
         })
       });
 

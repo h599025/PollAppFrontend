@@ -2,12 +2,10 @@
   <div id="app">
     <h1>Poll Application</h1>
 
-    <!-- Show the Create User page if no user has been created -->
     <div v-if="!userCreated">
       <CreateUserComponent @user-created="handleUserCreated" />
     </div>
 
-    <!-- Show the main app if the user is created -->
     <div v-else>
       <div class="greeting">
         <strong>Hello, {{ createdUser.username }}!</strong>
@@ -30,9 +28,9 @@ export default {
   name: 'App',
   data() {
     return {
-      userCreated: false,  // Track if the user has been created
-      createdUser: null,   // Store the created user details
-      currentView: 'CreatePollComponent'  // Default view is Create Poll
+      userCreated: false,
+      createdUser: null,
+      currentView: 'CreatePollComponent'
     };
   },
   components: {
@@ -43,7 +41,7 @@ export default {
   methods: {
     handleUserCreated(user) {
       this.userCreated = true;
-      this.createdUser = user;  // Store the user object and switch to the two-page layout
+      this.createdUser = user;
     }
   }
 };

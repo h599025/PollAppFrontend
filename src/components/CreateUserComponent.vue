@@ -38,11 +38,11 @@ export default {
           const createdUser = await response.json();
           alert('User created successfully!');
 
-          // Store the username in sessionStorage after creation
+
           sessionStorage.setItem('username', createdUser.username);
           console.log('Username stored in sessionStorage:', createdUser.username);
 
-          this.$emit('user-created', createdUser);  // Emit the user-created event with the user data
+          this.$emit('user-created', createdUser);
         } else {
           alert('Failed to create user.');
         }
@@ -54,7 +54,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-/* Add your styles here */
-</style>
