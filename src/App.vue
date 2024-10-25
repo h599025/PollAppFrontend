@@ -2,8 +2,11 @@
   <div id="app">
     <h1>Poll Application</h1>
 
-    <div v-if="!userCreated">
-      <CreateUserComponent @user-created="handleUserCreated" />
+    <div v-if="!isLoggedIn">
+      <component :is="currentView"
+                 @login-success="handleLoginSuccess"
+                 @navigate-to-create-user="currentView = 'CreateUserComponent'"
+                 @user-created="handleUserCreated" />
     </div>
 
     <div v-else>
@@ -23,22 +26,31 @@
 import CreatePollComponent from './components/CreatePollComponent.vue';
 import VoteComponent from './components/VoteComponent.vue';
 import CreateUserComponent from './components/CreateUserComponent.vue';
+import LogInComponent from "./components/LogInComponent.vue";
 
 export default {
   name: 'App',
   data() {
     return {
+      isLoggedIn: false,
       userCreated: false,
       createdUser: null,
-      currentView: 'CreatePollComponent'
+      currentView: 'LogInComponent'
     };
   },
   components: {
     CreatePollComponent,
     VoteComponent,
-    CreateUserComponent
+    CreateUserComponent,
+    LogInComponent
   },
   methods: {
+    handleLoginSuccess(user) {
+      this.isLoggedIn = true;
+      this.userCreated = true;
+      this.createdUser = user;
+      this.currentView = 'CreatePollComponent';
+    },
     handleUserCreated(user) {
       this.userCreated = true;
       this.createdUser = user;
