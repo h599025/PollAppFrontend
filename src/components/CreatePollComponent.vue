@@ -1,24 +1,21 @@
 <template>
   <div class="create-poll">
-    <h2>Create a New Poll (Logged in as {{ user.username }})</h2>
+    <h2>Lag en ny meningsmåling</h2>
     <form @submit.prevent="createPoll">
-      <label for="question">Poll Question:</label>
+      <label for="question">Spørsmål:</label>
       <input v-model="poll.question" id="question" required />
-      <label for="publishedAt">Published At:</label>
-      <input v-model="poll.publishedAt" type="datetime-local" id="publishedAt" required />
-
-      <label for="validUntil">Valid Until:</label>
+      <label for="validUntil">Gyldig til:</label>
       <input v-model="poll.validUntil" type="datetime-local" id="validUntil" required />
 
-      <h3>Options</h3>
+      <h3>Valgmuligheter</h3>
       <div v-for="(option, index) in poll.options" :key="index">
-        <label :for="'option-' + index">Option {{ index + 1 }}:</label>
+        <label :for="'option-' + index">Valg {{ index + 1 }}:</label>
         <input v-model="option.caption" :id="'option-' + index" required />
-        <button type="button" @click="removeOption(index)">Remove</button>
+        <button type="button" @click="removeOption(index)">Fjern</button>
       </div>
 
-      <button type="button" @click="addOption">Add Option</button>
-      <button type="submit">Create Poll</button>
+      <button type="button" @click="addOption">Legg til valgmulighet</button>
+      <button type="submit">Publiser meningsmåling</button>
     </form>
   </div>
 </template>
@@ -48,7 +45,7 @@ export default {
 
       const pollData = {
         question: this.poll.question,
-        publishedAt: new Date(this.poll.publishedAt).toISOString(),
+        publishedAt: new Date(Date.now()).toISOString(),
         validUntil: new Date(this.poll.validUntil).toISOString(),
         voteOptions: this.poll.options,
         creatorUsername: this.poll.creatorUsername

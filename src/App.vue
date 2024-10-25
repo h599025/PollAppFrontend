@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <h1>Poll Application</h1>
+    <h1>Feed Applikasjon</h1>
 
     <div v-if="!userCreated">
       <CreateUserComponent @user-created="handleUserCreated" />
@@ -8,11 +8,11 @@
 
     <div v-else>
       <div class="greeting">
-        <strong>Hello, {{ createdUser.username }}!</strong>
+        <strong>Hei, {{ createdUser.username }}!</strong>
       </div>
       <nav>
-        <button @click="currentView = 'CreatePollComponent'">Create Poll</button>
-        <button @click="currentView = 'VoteComponent'">Vote</button>
+        <button @click="currentView = 'CreatePollComponent'">Meningsmåling</button>
+        <button @click="currentView = 'VoteComponent'">Stem</button>
       </nav>
       <component :is="currentView" :user="createdUser" />
     </div>
