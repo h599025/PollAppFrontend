@@ -1,6 +1,6 @@
 <template>
   <div class="vote">
-    <h2>Vote on a Poll</h2>
+    <h2>Stem på en meningsmåling</h2>
     <div v-for="poll in polls" :key="poll.pollId" class="poll-item">
       <h3>{{ poll.question }}</h3>
       <div v-if="poll.voteOptions.length > 0">
@@ -9,6 +9,10 @@
           <button @click="vote(poll.pollId, option.voteOptionId)">
             Vote
           </button>
+          <button @click="deleteVote (poll.pollId, option.voteOptionId)">
+            Fjern
+          </button>
+          <p>Stemmer: {{option.votes.length}}</p>
         </div>
       </div>
       <div v-else>
@@ -27,7 +31,6 @@ export default {
     };
   },
   async created() {
-
     this.username = sessionStorage.getItem('username') || 'guest';
     console.log("Username retrieved from sessionStorage:", this.username);
 
@@ -48,7 +51,7 @@ export default {
           voteOptionId: voteOptionId,
           publishedAt: new Date().toISOString()
         })
-      });
+      })
 
       if (response.ok) {
         alert('Vote cast successfully!');
@@ -57,7 +60,51 @@ export default {
       } else {
         alert('Failed to cast vote.');
       }
+    },
+
+    async deleteVote(pollId, voteOptionId) {
+      console.log("Attempting to delete vote for user:", this.username);
+      const response = await fetch(`http://localhost:8080/votes`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: this.username,
+          pollId: pollId,
+          voteOptionId: voteOptionId
+        })
+      });
+
+      if (response.ok) {
+        alert('Vote removed successfully!');
+        // Optionally, you can refresh the polls or update the UI here.
+      } else if (response.status === 404) {
+        alert('You have not voted on this option yet.');
+      } else {
+        alert('Failed to remove vote.');
+      }
+    },
+
+    async getVotesForVoteOption(pollId, voteOptionId) {
+      const response = await fetch(`http://localhost:8080/voteOptions`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: this.username,
+          pollId: pollId,
+          voteOptionId: voteOptionId
+        })
+      });
+
+      if (response.ok) {
+        alert('Vote removed successfully!');
+        // Optionally, you can refresh the polls or update the UI here.
+      } else if (response.status === 404) {
+        alert('You have not voted on this option yet.');
+      } else {
+        alert('Failed to remove vote.');
+      }
     }
+
   }
 };
 </script>
