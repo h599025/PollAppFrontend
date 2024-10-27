@@ -48,6 +48,7 @@ export default {
 
           sessionStorage.setItem('username', loggedInUser.username);
           this.$emit('login-success', loggedInUser);
+
         } else {
           alert('Failed to log in. Please check your credentials.');
         }

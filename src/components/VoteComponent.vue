@@ -1,22 +1,24 @@
 <template>
   <div class="vote">
     <h2>Stem på en meningsmåling</h2>
-    <div v-for="poll in polls" :key="poll.pollId" class="poll-item">
-      <h3>{{ poll.question }}</h3>
-      <div v-if="poll.voteOptions.length > 0">
-        <div v-for="option in poll.voteOptions" :key="option.voteOptionId" class="option-item">
-          <span>{{ option.caption }}</span>
-          <button @click="vote(poll.pollId, option.voteOptionId)">
-            Vote
-          </button>
-          <button @click="deleteVote (poll.pollId, option.voteOptionId)">
-            Fjern
-          </button>
-          <p>Stemmer: {{option.votes.length}}</p>
+    <div class="user-container">
+      <div v-for="poll in polls" :key="poll.pollId" class="poll-card">
+        <h3>{{ poll.question }}</h3>
+        <div v-if="poll.voteOptions.length > 0">
+          <div v-for="option in poll.voteOptions" :key="option.voteOptionId" class="option-item">
+            <span>{{ option.caption }}</span>
+            <button @click="vote(poll.pollId, option.voteOptionId)">
+              Vote
+            </button>
+            <button @click="deleteVote (poll.pollId, option.voteOptionId)">
+              Fjern
+            </button>
+            <p>Stemmer: {{option.votes.length}}</p>
+          </div>
         </div>
-      </div>
-      <div v-else>
-        <p>No options available for this poll.</p>
+        <div v-else>
+          <p>No options available for this poll.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -110,20 +112,41 @@ export default {
 </script>
 
 <style scoped>
-.poll-item {
-  margin-bottom: 10px;
+.user-container {
+  background-color: #333;
+  color: white;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 600px;
+  margin: auto;
+  text-align: center;
+}
+
+.poll-card {
+  background-color: #444;
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 30px;
 }
 
 .option-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
-  margin-right: 40px;
+  padding: 10px 0;
+  gap: 10px;
+}
+
+.option-item span {
+  flex: 1; /* Allows the text to occupy available space */
+  text-align: left; /* Aligns the text to the left */
+  margin: 0;
+  font-size: 16px;
 }
 
 .option-item button {
-  padding: 5px 40px;
+  padding: 8px 16px;
   background-color: #007BFF;
   color: white;
   border: none;
@@ -135,8 +158,11 @@ export default {
   background-color: #0056b3;
 }
 
-.option-item span {
+.option-item p {
+  margin: 0; /* Remove default margins */
   font-size: 16px;
-  margin-left: 80px;
+  text-align: right;
+  width: 80px; /* Set a fixed width to accommodate "Stemmer: XX" */
+  white-space: nowrap;
 }
 </style>

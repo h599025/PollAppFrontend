@@ -65,6 +65,7 @@ export default {
         console.log("Poll created:", pollResponse);
         this.poll.question = '';
         this.poll.options = [{caption: ''}];
+        this.poll.validUntil = ''
       } else {
         console.error('Failed to create poll:', pollResponse);
         alert('Failed to create poll.');

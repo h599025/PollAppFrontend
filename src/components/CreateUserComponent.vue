@@ -64,6 +64,10 @@ export default {
           alert('User created successfully!');
 
           sessionStorage.setItem('username', createdUser.username);
+          sessionStorage.setItem('firstname', createdUser.firstname);
+          sessionStorage.setItem('lastname', createdUser.lastname);
+          sessionStorage.setItem('email', createdUser.email);
+          sessionStorage.setItem('password', createdUser.password);
           this.$emit('user-created', createdUser);
         } else {
           alert('Failed to create user.');

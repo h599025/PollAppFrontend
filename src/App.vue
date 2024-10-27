@@ -1,4 +1,7 @@
 <template>
+  <div class="button-group">
+    <button @click="currentView = 'UserComponent'">Min Side</button>
+  </div>
   <div id="app">
     <h1>Feed Applikasjon</h1>
 
@@ -6,9 +9,8 @@
       <component :is="currentView"
                  @login-success="handleLoginSuccess"
                  @navigate-to-create-user="currentView = 'CreateUserComponent'"
-                 @user-created="handleUserCreated" />
+                 @user-created="handleLoginSuccess" />
     </div>
-
     <div v-else>
       <div class="greeting">
         <strong>Hei, {{ createdUser.username }}!</strong>
@@ -27,6 +29,7 @@ import CreatePollComponent from './components/CreatePollComponent.vue';
 import VoteComponent from './components/VoteComponent.vue';
 import CreateUserComponent from './components/CreateUserComponent.vue';
 import LogInComponent from "./components/LogInComponent.vue";
+import UserComponent from "./components/UserComponent.vue";
 
 export default {
   name: 'App',
@@ -42,7 +45,8 @@ export default {
     CreatePollComponent,
     VoteComponent,
     CreateUserComponent,
-    LogInComponent
+    LogInComponent,
+    UserComponent
   },
   methods: {
     handleLoginSuccess(user) {
@@ -50,10 +54,6 @@ export default {
       this.userCreated = true;
       this.createdUser = user;
       this.currentView = 'CreatePollComponent';
-    },
-    handleUserCreated(user) {
-      this.userCreated = true;
-      this.createdUser = user;
     }
   }
 };
@@ -69,5 +69,12 @@ button {
 .greeting {
   margin-bottom: 20px;
   font-size: 1.2em;
+}
+
+.button-group {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  display: flex;
 }
 </style>
