@@ -6,12 +6,12 @@
 
         <div class="input-group">
           <label for="firstname">Fornavn:</label>
-          <input v-model="user.firstname" id="firstname" required placeholder="Fornavn" />
+          <input v-model="user.firstName" id="firstname" required placeholder="Fornavn" />
         </div>
 
         <div class="input-group">
           <label for="lastname">Etternavn:</label>
-          <input v-model="user.lastname" id="lastname" required placeholder="Etternavn" />
+          <input v-model="user.lastName" id="lastname" required placeholder="Etternavn" />
         </div>
 
         <div class="input-group">
@@ -40,8 +40,8 @@ export default {
   data() {
     return {
       user: {
-        firstname: '',
-        lastname: '',
+        firstName: '',
+        lastName: '',
         username: '',
         email: '',
         password: ''
@@ -59,22 +59,24 @@ export default {
           body: JSON.stringify(this.user)
         });
 
-        if (response.ok) {
-          const createdUser = await response.json();
-          alert('User created successfully!');
+        const responseText = await response.text();
+        console.log('Response text:', responseText);
 
-          sessionStorage.setItem('username', createdUser.username);
-          sessionStorage.setItem('firstname', createdUser.firstname);
-          sessionStorage.setItem('lastname', createdUser.lastname);
-          sessionStorage.setItem('email', createdUser.email);
-          sessionStorage.setItem('password', createdUser.password);
-          this.$emit('user-created', createdUser);
+        if (response.ok) {
+          if (responseText) {
+            const createdUser = JSON.parse(responseText);
+            alert('User created successfully!');
+            this.$emit('user-created', createdUser);
+          } else {
+            alert('User created successfully, but no response data received.');
+          }
         } else {
-          alert('Failed to create user.');
+          console.error('Failed to create user:', responseText);
+          alert('Failed to create user. Server response: ' + responseText);
         }
       } catch (error) {
         console.error('Error creating user:', error);
-        alert('Failed to create user.');
+        alert('Failed to create user. Error: ' + error.message);
       }
     }
   }
