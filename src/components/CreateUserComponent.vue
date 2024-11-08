@@ -51,7 +51,7 @@ export default {
   methods: {
     async submitForm() {
       try {
-        const response = await fetch('http://localhost:8080/users', {
+        const response = await fetch('http://localhost:8080/auth/register', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'

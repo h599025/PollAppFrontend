@@ -5,8 +5,8 @@
       <h3>Logg inn</h3>
       <form @submit.prevent="submitForm">
         <div class="input-group">
-          <label for="username">Email</label>
-          <input v-model="user.username" id="username" required placeholder="Email" />
+          <label for="username">Username</label>
+          <input v-model="user.username" id="username" required placeholder="Username" />
         </div>
 
         <div class="input-group">

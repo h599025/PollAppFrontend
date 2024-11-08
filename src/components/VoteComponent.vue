@@ -33,7 +33,7 @@ export default {
     };
   },
   async created() {
-    this.username = sessionStorage.getItem('username') || 'guest';
+    this.username = sessionStorage.getItem('username');
     console.log("Username retrieved from sessionStorage:", this.username);
 
     const response = await fetch('http://localhost:8080/polls');
