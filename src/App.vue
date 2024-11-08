@@ -19,7 +19,11 @@
         <button @click="currentView = 'CreatePollComponent'">Meningsmåling</button>
         <button @click="currentView = 'VoteComponent'">Stem</button>
       </nav>
-      <component :is="currentView" :user="createdUser" />
+      <component
+        :is="currentView"
+        :user="createdUser"
+        @logout="handleLogout"  
+      />
     </div>
   </div>
 </template>
@@ -54,6 +58,11 @@ export default {
       this.userCreated = true;
       this.createdUser = user;
       this.currentView = 'CreatePollComponent';
+    },
+    handleLogout() {
+      this.isLoggedIn = false;
+      this.createdUser = null;
+      this.currentView = 'LogInComponent';
     }
   }
 };

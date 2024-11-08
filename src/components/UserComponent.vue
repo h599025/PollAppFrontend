@@ -1,7 +1,7 @@
 <template>
     <!-- Top buttons -->
     <div class="button-group">
-      <button class="btn">Logg ut</button>
+      <button class="btn" @click="logout">Logg ut</button>
     </div>
     <div class="user-container">
         <!-- Heading-->
@@ -65,19 +65,26 @@
 </template>
 
 <script>
+import LogInComponent from "./LogInComponent.vue";
 export default {
     data() {
         return {
             user: {
+                id: sessionStorage.getItem('id'),
+                firstname: sessionStorage.getItem('firstname'),
+                lastname: sessionStorage.getItem('lastname'),
                 username: sessionStorage.getItem('username'),
                 email: sessionStorage.getItem('email'),
-                password: sessionStorage.getItem('password'),
+                password: sessionStorage.getItem('password')
             },
             polls: []
         };
     },
     async created() {
       await this.fetchUserPolls();
+    },
+    components: {
+        LogInComponent
     },
     methods: {
         async fetchUserPolls() {
@@ -129,6 +136,10 @@ export default {
         deletePoll(index) {
             this.polls.splice(index, 1);
             alert(`Poll ${index + 1} has been deleted!`);
+        },
+        logout() {
+            sessionStorage.clear();
+            this.$emit("logout"); // Emit logout event
         }
     }
 };
