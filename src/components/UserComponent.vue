@@ -70,12 +70,12 @@ export default {
     data() {
         return {
             user: {
-                id: sessionStorage.getItem('id'),
-                firstname: sessionStorage.getItem('firstname'),
-                lastname: sessionStorage.getItem('lastname'),
-                username: sessionStorage.getItem('username'),
-                email: sessionStorage.getItem('email'),
-                password: sessionStorage.getItem('password')
+                id: "",
+                firstname: "",
+                lastname: "",
+                username: "",
+                email: "",
+                password: ""
             },
             polls: []
         };
