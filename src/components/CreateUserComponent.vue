@@ -37,6 +37,7 @@
 
 <script>
 export default {
+  props: ['user'],
   data() {
     return {
       user: {
@@ -59,21 +60,13 @@ export default {
           body: JSON.stringify(this.user)
         });
 
-        const responseText = await response.text();
-        console.log('Response text:', responseText);
-
         if (response.ok) {
-          if (responseText) {
-            const createdUser = JSON.parse(responseText);
+            const createdUser = await response.json();
             alert('User created successfully!');
-            this.$emit('user-created', createdUser);
+            this.$emit('user-created', this.user);
           } else {
             alert('User created successfully, but no response data received.');
           }
-        } else {
-          console.error('Failed to create user:', responseText);
-          alert('Failed to create user. Server response: ' + responseText);
-        }
       } catch (error) {
         console.error('Error creating user:', error);
         alert('Failed to create user. Error: ' + error.message);

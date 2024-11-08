@@ -23,11 +23,13 @@
 
 <script>
 export default {
+  props: ['user'],
   data() {
     return {
       user: {
         username: '',
-        password: ''
+        password: '',
+        email: ''
       }
     };
   },
@@ -46,8 +48,8 @@ export default {
           const loggedInUser = await response.json();
           alert('Login successful!');
 
-          sessionStorage.setItem('username', loggedInUser.username);
-          this.$emit('login-success', loggedInUser);
+          //sessionStorage.setItem('username', loggedInUser.username);
+          this.$emit('login-success', this.user);
 
         } else {
           alert('Failed to log in. Please check your credentials.');

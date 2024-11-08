@@ -67,16 +67,10 @@
 <script>
 import LogInComponent from "./LogInComponent.vue";
 export default {
+    props: ['user'],
     data() {
         return {
-            user: {
-                id: "",
-                firstname: "",
-                lastname: "",
-                username: "",
-                email: "",
-                password: ""
-            },
+            oldUsername: this.user.username,
             polls: []
         };
     },
@@ -106,7 +100,7 @@ export default {
         },
         async submitForm() {
             try {
-                const response = await fetch(`http://localhost:8080/users/${this.user.username}`, {
+                const response = await fetch(`http://localhost:8080/users/${this.oldUsername}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
@@ -117,8 +111,9 @@ export default {
                 if (response.ok) {
                     const updatedUser = await response.json();
                     alert('User updated successfully!');
+                    
+                    this.oldUsername = updatedUser.username;
 
-                    sessionStorage.setItem('username', updatedUser.username);
                     this.$emit('user-updated', updatedUser);
                 } else {
                     alert('Failed to update user.');

@@ -5,12 +5,15 @@
   <div id="app">
     <h1>Feed Applikasjon</h1>
 
+    <!-- Show login or register component when not logged in -->
     <div v-if="!isLoggedIn">
       <component :is="currentView"
                  @login-success="handleLoginSuccess"
                  @navigate-to-create-user="currentView = 'CreateUserComponent'"
-                 @user-created="handleLoginSuccess" />
+                 @user-created="handleUserCreated" /> <!-- Listen for user-created event -->
     </div>
+
+    <!-- Show user area when logged in -->
     <div v-else>
       <div class="greeting">
         <strong>Hei, {{ createdUser.username }}!</strong>
@@ -42,7 +45,7 @@ export default {
       isLoggedIn: false,
       userCreated: false,
       createdUser: null,
-      currentView: 'LogInComponent'
+      currentView: 'LogInComponent'  // Initially show the login view
     };
   },
   components: {
@@ -53,16 +56,24 @@ export default {
     UserComponent
   },
   methods: {
+    // Handles successful login or user creation
     handleLoginSuccess(user) {
       this.isLoggedIn = true;
       this.userCreated = true;
       this.createdUser = user;
-      this.currentView = 'CreatePollComponent';
+      this.currentView = 'CreatePollComponent';  // Redirect to the poll creation view after login
+    },
+    // Handles user creation flow
+    handleUserCreated(user) {
+      this.isLoggedIn = true;
+      this.userCreated = true;
+      this.createdUser = user;
+      this.currentView = 'CreatePollComponent';  // After successful registration, navigate to poll creation
     },
     handleLogout() {
       this.isLoggedIn = false;
       this.createdUser = null;
-      this.currentView = 'LogInComponent';
+      this.currentView = 'LogInComponent';  // Go back to the login screen
     }
   }
 };
