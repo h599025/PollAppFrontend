@@ -6,12 +6,12 @@
       <form @submit.prevent="submitForm">
         <div class="input-group">
           <label for="username">Username</label>
-          <input v-model="user.username" id="username" required placeholder="Username" />
+          <input v-model="userData.username" id="username" required placeholder="Username" />
         </div>
 
         <div class="input-group">
           <label for="password">Passord</label>
-          <input v-model="user.password" id="password" type="password" required placeholder="Passord" />
+          <input v-model="userData.password" id="password" type="password" required placeholder="Passord" />
         </div>
 
         <button type="submit">Logg inn</button>
@@ -26,7 +26,7 @@ export default {
   props: ['user'],
   data() {
     return {
-      user: {
+      userData: { // Renamed from user to userData
         username: '',
         password: '',
         email: ''
@@ -41,16 +41,13 @@ export default {
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify(this.user)
+          body: JSON.stringify(this.userData)
         });
 
         if (response.ok) {
           const loggedInUser = await response.json();
           alert('Login successful!');
-
-          //sessionStorage.setItem('username', loggedInUser.username);
-          this.$emit('login-success', this.user);
-
+          this.$emit('login-success', this.userData); // Use userData instead of user
         } else {
           alert('Failed to log in. Please check your credentials.');
         }
