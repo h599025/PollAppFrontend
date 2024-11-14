@@ -42,7 +42,7 @@
                 <label>Svar: </label>
                 <div v-for="option in poll.voteOptions" :key="option.voteOptionId" class="option-item">
                   <div class="poll-item">
-                      <input v-model="option.caption" />
+                      <input v-model="option.caption" readonly/>
                       <p>Stemmer: {{ option.votes.length}}</p>
                   </div>
                 </div>
@@ -116,8 +116,30 @@ export default {
             }
         },
         // Update Poll
-        updatePoll(index) {
-            alert(`Poll ${index + 1} has been updated!`);
+        async updatePoll(poll) {
+            let validUntilDate = new Date(poll.validUntil);
+            poll.validUntil = validUntilDate.toISOString(); // Formats to "YYYY-MM-DDTHH:MM:SS.sssZ"
+            console.log("validuntil: " + poll.validUntil)
+            try {
+                const responseUpdate = await fetch(`http://localhost:8080/polls/${poll.pollId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(poll)
+                });
+
+                if (responseUpdate.ok) {
+                    this.polls = this.polls.filter(polls => polls.pollId !== poll.pollId);
+                    alert(`Poll ${poll.pollId} has been updated`);
+                } else {
+                    alert('Failed to update poll.');
+                }
+            } catch (error) {
+                
+            }
+
+            //alert(`Poll ${index + 1} has been updated!`);
             // Here, you'd typically send the updated poll data to the backend
         },
         // Delete Poll
