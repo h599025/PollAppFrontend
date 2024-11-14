@@ -27,7 +27,7 @@ export default {
     return {
       poll: {
         question: '',
-        options: [{ caption: '' }],
+        options: [{caption: ''}],
         publishedAt: '',
         validUntil: '',
         creatorUsername: this.user.username
@@ -47,12 +47,12 @@ export default {
         question: this.poll.question,
         publishedAt: new Date(Date.now()).toISOString(),
         validUntil: new Date(this.poll.validUntil).toISOString(),
-        voteOptions: this.poll.options,
         creatorUsername: this.poll.creatorUsername
       };
 
       console.log("Poll data to be sent:", pollData);
 
+      console.log("options:", this.poll.options);
       const response = await fetch('http://localhost:8080/polls', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -63,12 +63,30 @@ export default {
       if (response.ok) {
         alert('Poll created successfully!');
         console.log("Poll created:", pollResponse);
-        this.poll.question = '';
-        this.poll.options = [{caption: ''}];
-        this.poll.validUntil = ''
       } else {
         console.error('Failed to create poll:', pollResponse);
         alert('Failed to create poll.');
+      }
+      //voteOptionData.pollId = 1;
+      //console.log("VoteOptions to be sent:", voteOptionData);
+      console.log("length: " + this.poll.options.length);
+      for (let i = 0; i < this.poll.options.length; i++) {
+        const voteOptionData = {
+        pollId: pollResponse.pollId,
+        caption: this.poll.options[i].caption,
+        presentationOrder: i + 1,
+        };
+        console.log("VoteOptions to be sent:", voteOptionData);
+
+        const responseVoteOptions = await fetch(`http://localhost:8080/voteOptions/polls/${voteOptionData.pollId}`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},  
+        body: JSON.stringify(voteOptionData)
+        });
+
+        const voteOptionResponse = await responseVoteOptions.json();
+        console.log("VoteOptions created:", voteOptionResponse);
+
       }
     }
   }

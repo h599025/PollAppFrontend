@@ -26,6 +26,7 @@
 
 <script>
 export default {
+  props: ['user'],
   data() {
     return {
       polls: [],
@@ -33,7 +34,8 @@ export default {
     };
   },
   async created() {
-    this.username = sessionStorage.getItem('username');
+    //this.username = sessionStorage.getItem('username');
+    this.username = this.user.username;
     console.log("Username retrieved from sessionStorage:", this.username);
 
     const response = await fetch('http://localhost:8080/polls');
@@ -44,7 +46,7 @@ export default {
   methods: {
     async vote(pollId, voteOptionId) {
       console.log("username fetched:", this.username);
-      const response = await fetch(`http://localhost:8080/votes`, {
+      const response = await fetch(`http://localhost:8080/votes/voteOptions/${voteOptionId}/polls/${pollId}/users/${this.username}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -66,23 +68,43 @@ export default {
 
     async deleteVote(pollId, voteOptionId) {
       console.log("Attempting to delete vote for user:", this.username);
-      const response = await fetch(`http://localhost:8080/votes`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          username: this.username,
-          pollId: pollId,
-          voteOptionId: voteOptionId
-        })
+      const checkIfHaveVotedResponse = await fetch(`http://localhost:8080/votes/polls/${pollId}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
       });
+      const checkIfHaveVotedResponseData = await checkIfHaveVotedResponse.json();
 
-      if (response.ok) {
+      let haveVoted = false;
+      let voteId = -5;
+      for (let i = 0; i < checkIfHaveVotedResponseData.length; i++) {
+        if (checkIfHaveVotedResponseData[i].username === this.username) {
+          console.log("Vote found for user:", this.username);
+          haveVoted = true;
+          voteId = checkIfHaveVotedResponseData[i].voteId;
+          break;
+        }
+      }
+
+      if (haveVoted) {
+          const response = await fetch(`http://localhost:8080/votes/${voteId}`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: this.username,
+            pollId: pollId,
+            voteOptionId: voteOptionId
+          })
+        });
+        //const responseData = await response.json();
+        //console.log("Response data:", responseData);
+        if (response.ok) {
         alert('Vote removed successfully!');
         // Optionally, you can refresh the polls or update the UI here.
       } else if (response.status === 404) {
         alert('You have not voted on this option yet.');
       } else {
         alert('Failed to remove vote.');
+      }
       }
     },
 

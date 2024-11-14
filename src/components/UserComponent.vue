@@ -33,7 +33,7 @@
         <h2>Mine Polls:</h2>
 
         <div class="polls-section" v-if="polls.length">
-            <div v-for="(poll, index) in polls" :key="index" class="poll-card">
+            <div v-for="poll in polls" :key="poll.pollId" class="poll-card">
                 <h3>Spørsmål {{ index + 1 }}</h3>
 
                 <div class="poll-item">
@@ -53,7 +53,7 @@
                 </div>
 
                 <button @click="updatePoll(index)" class="btn-submit">Lagre endring</button>
-                <button @click="deletePoll(index)" class="btn-delete">Slett Poll</button>
+                <button @click="deletePoll(poll.pollId)" class="btn-delete">Slett Poll</button>
             </div>
         </div>
 
@@ -83,17 +83,10 @@ export default {
     methods: {
         async fetchUserPolls() {
           try {
-            const response = await fetch('http://localhost:8080/polls'); // Adjust endpoint if needed
+            const response = await fetch(`http://localhost:8080/polls/${creatorName}`); // Adjust endpoint if needed
             const allPolls = await response.json();
 
-            // Filter polls by creatorUsername
-            this.polls = allPolls
-                .filter(poll => poll.creatorUsername === this.user.username)
-                .map(poll => ({
-                  ...poll,
-                  // Convert validUntil to "YYYY-MM-DDTHH:MM" for datetime-local input
-                  validUntil: poll.validUntil ? poll.validUntil.slice(0, 16) : ''
-                }));
+            this.polls = allPolls;
           } catch (error) {
             console.error('Error fetching polls:', error);
           }
@@ -128,7 +121,14 @@ export default {
             // Here, you'd typically send the updated poll data to the backend
         },
         // Delete Poll
-        deletePoll(index) {
+        deletePoll(pollId) {
+            try {
+                fetch(`http://localhost:8080/polls/${pollId}}`, {
+                    method: 'DELETE'
+                });
+            } catch (error) {
+                
+            }
             this.polls.splice(index, 1);
             alert(`Poll ${index + 1} has been deleted!`);
         },
