@@ -11,6 +11,9 @@
 
     <!-- Show user area when logged in -->
     <div v-else>
+      <div class="button-group">
+        <button @click="currentView = 'UserComponent'">Min Side</button>
+      </div>
       <div class="greeting">
         <strong>Hei, {{ createdUser.username }}!</strong>
       </div>

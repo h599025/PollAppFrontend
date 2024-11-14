@@ -31,9 +31,8 @@
 
         <!-- Polls Section -->
         <h2>Mine Polls:</h2>
-
         <div class="polls-section" v-if="polls.length">
-            <div v-for="poll in polls" :key="poll.pollId" class="poll-card">
+            <div v-for="(poll, index) in polls" :key="poll.pollId" class="poll-card">
                 <h3>Spørsmål {{ index + 1 }}</h3>
 
                 <div class="poll-item">
@@ -52,7 +51,7 @@
                   <input type="datetime-local" v-model="poll.validUntil"/>
                 </div>
 
-                <button @click="updatePoll(index)" class="btn-submit">Lagre endring</button>
+                <button @click="updatePoll(poll)" class="btn-submit">Lagre endring</button>
                 <button @click="deletePoll(poll.pollId)" class="btn-delete">Slett Poll</button>
             </div>
         </div>
@@ -83,7 +82,8 @@ export default {
     methods: {
         async fetchUserPolls() {
           try {
-            const response = await fetch(`http://localhost:8080/polls/${creatorName}`); // Adjust endpoint if needed
+            console.log("username " + this.user.username)
+            const response = await fetch(`http://localhost:8080/polls/user/${this.user.username}`); // Adjust endpoint if needed
             const allPolls = await response.json();
 
             this.polls = allPolls;
@@ -121,16 +121,24 @@ export default {
             // Here, you'd typically send the updated poll data to the backend
         },
         // Delete Poll
-        deletePoll(pollId) {
+        async deletePoll(pollId) {
+            console.log("poll id" + pollId)
             try {
-                fetch(`http://localhost:8080/polls/${pollId}}`, {
+                const responseDelete = await fetch(`http://localhost:8080/polls/${pollId}`, {
                     method: 'DELETE'
                 });
+
+                if (responseDelete.ok) {
+                    this.polls = this.polls.filter(poll => poll.pollId !== pollId);
+                    alert(`Poll ${pollId} has been deleted!`);
+                } else {
+                    alert('Failed to delete poll.');
+                }
             } catch (error) {
                 
             }
-            this.polls.splice(index, 1);
-            alert(`Poll ${index + 1} has been deleted!`);
+            //this.polls.splice(index, 1);
+            //alert(`Poll ${index + 1} has been deleted!`);
         },
         logout() {
             sessionStorage.clear();
