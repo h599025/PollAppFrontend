@@ -71,6 +71,10 @@ export default {
       //responseVoteOnPoll = await responseVoteOnPoll.json();
       //console.log("response:" + responseVoteOnPoll)
       if (responseVoteOnPoll.ok) {
+        const response = await fetch('http://localhost:8080/polls');
+        const data = await response.json();
+        console.log("Polls fetched:", data);
+        this.polls = data;
         alert('Vote cast successfully!');
       } else if (responseVoteOnPoll.status === 400) {
         alert('You have already voted on this poll!');
@@ -111,8 +115,12 @@ export default {
         //const responseData = await response.json();
         //console.log("Response data:", responseData);
         if (response.ok) {
-        alert('Vote removed successfully!');
-        // Optionally, you can refresh the polls or update the UI here.
+          const response = await fetch('http://localhost:8080/polls');
+          const data = await response.json();
+          console.log("Polls fetched:", data);
+          this.polls = data;
+          alert('Vote removed successfully!');
+
       } else if (response.status === 404) {
         alert('You have not voted on this option yet.');
       } else {
