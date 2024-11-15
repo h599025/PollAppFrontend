@@ -7,7 +7,7 @@
         <div v-if="poll.voteOptions.length > 0">
           <div v-for="option in poll.voteOptions" :key="option.voteOptionId" class="option-item">
             <span>{{ option.caption }}</span>
-            <button @click="vote(poll.pollId, option.voteOptionId)">
+            <button @click="vote(poll.pollId, option.voteOptionId, option.caption, option.presentationOrder)">
               Vote
             </button>
             <button @click="deleteVote (poll.pollId, option.voteOptionId)">
@@ -44,25 +44,38 @@ export default {
     this.polls = data;
   },
   methods: {
-    async vote(pollId, voteOptionId) {
+    async vote(pollId, voteOptionId, caption, presentationOrder) {
+      //const responseVote = await fetch(`http://localhost:8080/votes/${voteOptionId}`, {
+      //  method: 'GET',
+      //})
+
+      //responseVote = await responseVote.json();
+      //console.log("vote: " + responseVote)
+
       console.log("username fetched:", this.username);
-      const response = await fetch(`http://localhost:8080/votes/voteOptions/${voteOptionId}/polls/${pollId}/users/${this.username}`, {
+      const responseVoteOnPoll = await fetch(`http://localhost:8080/votes/voteOptions/${voteOptionId}/polls/${pollId}/users/${this.username}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           username: this.username,
           pollId: pollId,
-          voteOptionId: voteOptionId,
-          publishedAt: new Date().toISOString()
+          voteOption: {
+            pollId: pollId,
+            caption: caption,
+            presentationOrder: presentationOrder
+          },
+          publishedAt: new Date(Date.now()).toISOString()
         })
       })
 
-      if (response.ok) {
+      //responseVoteOnPoll = await responseVoteOnPoll.json();
+      //console.log("response:" + responseVoteOnPoll)
+      if (responseVoteOnPoll.ok) {
         alert('Vote cast successfully!');
-      } else if (response.status === 400) {
+      } else if (responseVoteOnPoll.status === 400) {
         alert('You have already voted on this poll!');
       } else {
-        alert('Failed to cast vote.');
+        alert('Failed to cast vote. ' + responseVoteOnPoll);
       }
     },
 
