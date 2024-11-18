@@ -1,111 +1,115 @@
 <template>
   <div class="create-poll">
-    <h2>Lag en ny meningsmåling</h2>
+    <h2>Create a New Poll</h2>
     <form @submit.prevent="createPoll">
-      <label for="question">Spørsmål:</label>
-      <input v-model="poll.question" id="question" required />
-      <label for="validUntil">Gyldig til:</label>
-      <input v-model="poll.validUntil" type="datetime-local" id="validUntil" required />
+      <FormField label="Question:" id="question" v-model="poll.question" />
+      <FormField label="Valid Until:" id="validUntil" v-model="poll.validUntil" type="datetime-local" />
 
-      <h3>Valgmuligheter</h3>
-      <div v-for="(option, index) in poll.options" :key="index">
-        <label :for="'option-' + index">Valg {{ index + 1 }}:</label>
-        <input v-model="option.caption" :id="'option-' + index" required />
-        <button type="button" @click="removeOption(index)">Fjern</button>
-      </div>
+      <OptionList :options="poll.options" title="Options" />
 
-      <button type="button" @click="addOption">Legg til valgmulighet</button>
-      <button type="submit">Publiser meningsmåling</button>
+      <button type="submit" class="submit-button">Publish Poll</button>
     </form>
   </div>
 </template>
 
 <script>
+import FormField from './FormField.vue';
+import OptionList from './OptionList.vue';
+
 export default {
+  components: { FormField, OptionList },
   props: ['user'],
   data() {
     return {
       poll: {
         question: '',
-        options: [{caption: ''}],
-        publishedAt: '',
+        options: [{ caption: '' }],
         validUntil: '',
         creatorUsername: this.user.username
       }
     };
   },
   methods: {
-    addOption() {
-      this.poll.options.push({caption: ''});
-    },
-    removeOption(index) {
-      this.poll.options.splice(index, 1);
-    },
     async createPoll() {
-
-      const pollData = {
-        question: this.poll.question,
-        publishedAt: new Date(Date.now()).toISOString(),
-        validUntil: new Date(this.poll.validUntil).toISOString(),
-        creatorUsername: this.poll.creatorUsername
-      };
-
-      console.log("Poll data to be sent:", pollData);
-
-      console.log("options:", this.poll.options);
-      const response = await fetch('http://localhost:8080/polls', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(pollData)
-      });
-
-      const pollResponse = await response.json();
-      if (response.ok) {
-        alert('Poll created successfully!');
-        console.log("Poll created:", pollResponse);
-      } else {
-        console.error('Failed to create poll:', pollResponse);
-        alert('Failed to create poll.');
-      }
-      //voteOptionData.pollId = 1;
-      //console.log("VoteOptions to be sent:", voteOptionData);
-      console.log("length: " + this.poll.options.length);
-      for (let i = 0; i < this.poll.options.length; i++) {
-        const voteOptionData = {
-        pollId: pollResponse.pollId,
-        caption: this.poll.options[i].caption,
-        presentationOrder: i + 1,
+      try {
+        const pollData = {
+          question: this.poll.question,
+          validUntil: new Date(this.poll.validUntil).toISOString(),
+          creatorUsername: this.poll.creatorUsername
         };
-        console.log("VoteOptions to be sent:", voteOptionData);
 
-        const responseVoteOptions = await fetch(`http://localhost:8080/voteOptions/polls/${voteOptionData.pollId}`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},  
-        body: JSON.stringify(voteOptionData)
+        console.log('Sending poll data:', pollData);
+
+        const pollResponse = await fetch('http://localhost:8080/polls', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(pollData)
         });
 
-        const voteOptionResponse = await responseVoteOptions.json();
-        console.log("VoteOptions created:", voteOptionResponse);
+        if (!pollResponse.ok) throw new Error('Failed to create poll');
 
+        const createdPoll = await pollResponse.json();
+
+        console.log('Created poll:', createdPoll);
+
+        // Add options to the created poll
+        for (let i = 0; i < this.poll.options.length; i++) {
+          const option = this.poll.options[i];
+          const optionData = {
+            pollId: createdPoll.pollId,
+            caption: option.caption,
+            presentationOrder: i + 1
+          };
+
+          console.log('Sending option data:', optionData);
+
+          const optionResponse = await fetch(`http://localhost:8080/voteOptions/polls/${optionData.pollId}`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(optionData)
+          });
+
+          if (!optionResponse.ok) throw new Error('Failed to create option');
+          console.log('Option created successfully');
+        }
+
+        alert('Poll created successfully!');
+        this.resetForm();
+      } catch (error) {
+        console.error(error);
+        alert('Failed to create poll or options.');
       }
+    },
+    resetForm() {
+      this.poll.question = '';
+      this.poll.options = [{caption: ''}];
+      this.poll.validUntil = '';
     }
   }
 };
 </script>
+
 <style scoped>
-.form-group {
-  display: inline-block;
-  margin-right: 15px;
+.create-poll {
+  max-width: 600px;
+  margin: auto;
+  padding: 20px;
+  background-color: #444;
+  color: white;
+  border-radius: 8px;
 }
 
-
-.form-group label {
-  margin-right: 10px;
+.submit-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
-
-label[for="publishedAt"],
-label[for="validUntil"] {
-  margin-left: 20px;
+.submit-button:hover {
+  background-color: #0056b3;
 }
 </style>

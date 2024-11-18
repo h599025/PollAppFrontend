@@ -1,32 +1,26 @@
 <template>
   <div class="vote">
-    <h2>Stem på en meningsmåling</h2>
-    <div class="user-container">
-      <div v-for="poll in polls" :key="poll.pollId" class="poll-card">
-        <h3>{{ poll.question }}</h3>
-        <div v-if="poll.voteOptions.length > 0">
-          <div v-for="option in poll.voteOptions" :key="option.voteOptionId" class="option-item">
-            <span>{{ option.caption }}</span>
-            <button @click="vote(poll.pollId, option.voteOptionId, option.caption, option.presentationOrder)">
-              Vote
-            </button>
-            <button @click="deleteVote (poll.pollId, option.voteOptionId)">
-              Fjern
-            </button>
-            <p>Stemmer: {{option.votes.length}}</p>
-          </div>
-        </div>
-        <div v-else>
-          <p>No options available for this poll.</p>
-        </div>
-      </div>
+    <h2>Vote on Polls</h2>
+    <div class="poll-container">
+      <PollCard
+          v-for="poll in polls"
+          :key="poll.pollId"
+          :poll="poll"
+          @vote="vote"
+          @delete-vote="deleteVote"
+      />
     </div>
   </div>
 </template>
 
 <script>
+import PollCard from './PollCard.vue';
+
 export default {
   props: ['user'],
+  components: {
+    PollCard
+  },
   data() {
     return {
       polls: [],
@@ -34,10 +28,11 @@ export default {
     };
   },
   async created() {
-    //this.username = sessionStorage.getItem('username');
+    // Use user prop to set the username
     this.username = this.user.username;
-    console.log("Username retrieved from sessionStorage:", this.username);
+    console.log("Username retrieved from props:", this.username);
 
+    // Fetch polls
     const response = await fetch('http://localhost:8080/polls');
     const data = await response.json();
     console.log("Polls fetched:", data);
@@ -45,13 +40,6 @@ export default {
   },
   methods: {
     async vote(pollId, voteOptionId, caption, presentationOrder) {
-      //const responseVote = await fetch(`http://localhost:8080/votes/${voteOptionId}`, {
-      //  method: 'GET',
-      //})
-
-      //responseVote = await responseVote.json();
-      //console.log("vote: " + responseVote)
-
       console.log("username fetched:", this.username);
       const responseVoteOnPoll = await fetch(`http://localhost:8080/votes/voteOptions/${voteOptionId}/polls/${pollId}/users/${this.username}`, {
         method: 'POST',
@@ -66,10 +54,8 @@ export default {
           },
           publishedAt: new Date(Date.now()).toISOString()
         })
-      })
+      });
 
-      //responseVoteOnPoll = await responseVoteOnPoll.json();
-      //console.log("response:" + responseVoteOnPoll)
       if (responseVoteOnPoll.ok) {
         const response = await fetch('http://localhost:8080/polls');
         const data = await response.json();
@@ -85,6 +71,7 @@ export default {
 
     async deleteVote(pollId, voteOptionId) {
       console.log("Attempting to delete vote for user:", this.username);
+
       const checkIfHaveVotedResponse = await fetch(`http://localhost:8080/votes/polls/${pollId}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
@@ -103,7 +90,7 @@ export default {
       }
 
       if (haveVoted) {
-          const response = await fetch(`http://localhost:8080/votes/${voteId}`, {
+        const response = await fetch(`http://localhost:8080/votes/${voteId}`, {
           method: 'DELETE',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -112,20 +99,18 @@ export default {
             voteOptionId: voteOptionId
           })
         });
-        //const responseData = await response.json();
-        //console.log("Response data:", responseData);
+
         if (response.ok) {
           const response = await fetch('http://localhost:8080/polls');
           const data = await response.json();
           console.log("Polls fetched:", data);
           this.polls = data;
           alert('Vote removed successfully!');
-
-      } else if (response.status === 404) {
-        alert('You have not voted on this option yet.');
-      } else {
-        alert('Failed to remove vote.');
-      }
+        } else if (response.status === 404) {
+          alert('You have not voted on this option yet.');
+        } else {
+          alert('Failed to remove vote.');
+        }
       }
     },
 
@@ -142,17 +127,16 @@ export default {
 
       if (response.ok) {
         alert('Vote removed successfully!');
-        // Optionally, you can refresh the polls or update the UI here.
       } else if (response.status === 404) {
         alert('You have not voted on this option yet.');
       } else {
         alert('Failed to remove vote.');
       }
     }
-
   }
 };
 </script>
+
 
 <style scoped>
 .user-container {
@@ -182,8 +166,8 @@ export default {
 }
 
 .option-item span {
-  flex: 1; /* Allows the text to occupy available space */
-  text-align: left; /* Aligns the text to the left */
+  flex: 1;
+  text-align: left;
   margin: 0;
   font-size: 16px;
 }
@@ -202,10 +186,10 @@ export default {
 }
 
 .option-item p {
-  margin: 0; /* Remove default margins */
+  margin: 0;
   font-size: 16px;
   text-align: right;
-  width: 80px; /* Set a fixed width to accommodate "Stemmer: XX" */
+  width: 80px;
   white-space: nowrap;
 }
 </style>
